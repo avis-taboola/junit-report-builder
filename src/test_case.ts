@@ -13,6 +13,7 @@ export class TestCase extends TestNode {
   private _failureAttributes: any;
   private _errorAttachment: string | undefined;
   private _errorContent: string | undefined;
+  private _skippedMessage: string | undefined;
 
   constructor() {
     super('testcase');
@@ -26,6 +27,7 @@ export class TestCase extends TestNode {
     this._failureAttributes = {};
     this._errorAttachment = undefined;
     this._errorContent = undefined;
+    this._skippedMessage = undefined;
   }
 
   /**
@@ -93,10 +95,12 @@ export class TestCase extends TestNode {
   }
 
   /**
+   * @param message
    * @returns this
    */
-  skipped(): this {
+  skipped(message?: string): this {
     this._skipped = true;
+    this._skippedMessage = message;
     return this;
   }
 
@@ -174,7 +178,8 @@ export class TestCase extends TestNode {
       }
     }
     if (this._skipped) {
-      testCaseElement.ele('skipped');
+      const skippedAttrs = this._skippedMessage ? { message: this._skippedMessage } : {};
+      testCaseElement.ele('skipped', skippedAttrs);
     }
     if (this._standardOutput) {
       testCaseElement.ele('system-out').cdata(this._standardOutput);
